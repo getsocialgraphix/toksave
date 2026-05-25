@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokSave Direct</title>
+    <style>
+        :root { --bg: #0b0a1a; --primary: #ec4899; --secondary: #4f46e5; --text: #f3f4f6; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .card { background: #110f2c; border: 1px solid #1e1b4b; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        textarea { width: 100%; height: 150px; background: #080718; color: white; border: 1px solid #312e81; border-radius: 8px; padding: 12px; box-sizing: border-box; font-size: 16px; }
+        button { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 10px; font-size: 16px; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #1e1b4b; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>TokSave Direct</h2>
+        
+        <div class="card">
+            <textarea id="urlInput" placeholder="Paste all your TikTok links here..."></textarea>
+            <button onclick="processLinks()">Prepare Downloads</button>
+        </div>
+
+        <div id="results" class="card hidden">
+            <h3>Download Queue</h3>
+            <div id="videoList"></div>
+        </div>
+    </div>
+
+    <script>
+        function processLinks() {
+            const text = document.getElementById('urlInput').value;
+            // Splitting links by newline or space
+            const links = text.split(/\s+/).filter(l => l.startsWith('http'));
+            const output = document.getElementById('videoList');
+            const resultsDiv = document.getElementById('results');
+            
+            output.innerHTML = '';
+            
+            if (links.length > 0) {
+                resultsDiv.classList.remove('hidden');
+                links.forEach((link, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'row';
+                    div.innerHTML = `
+                        <span>Video ${i + 1}</span> 
+                        <button onclick="directDownload('${link}')" style="width: auto; padding: 8px 16px;">Save</button>
+                    `;
+                    output.appendChild(div);
+                });
+            } else {
+                alert("No valid links found. Please paste URLs starting with http.");
+            }
+        }
+
+        function directDownload(tiktokUrl) {
+            // This URL points to your Render backend "Brain"
+            const backendUrl = "https://toksavebackend.onrender.com/download";
+            window.location.href = `${backendUrl}?url=${encodeURIComponent(tiktokUrl)}`;
+        }
+    </script>
+</body>
+</html>
